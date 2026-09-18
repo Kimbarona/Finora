@@ -1,0 +1,341 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   FINORA DESIGN SYSTEM
+   --------------------------------------------------------------------------
+   Direction: "quiet ledger". A warm paper ground instead of clinical white,
+   deep forest green as the single action colour, copper reserved for
+   editorial marks, and money-green/clay-red used only where a figure
+   genuinely carries a sign.
+
+   Type is a three-voice system, which is what makes the page read as
+   financial rather than as generic SaaS:
+     - Source Serif 4  : headlines. Editorial, institutional, calm.
+     - IBM Plex Sans   : interface and body copy.
+     - IBM Plex Mono   : every number, label and ledger annotation.
+
+   Geometry is architectural on purpose: 3 / 6 / 10px radii, 1px rules
+   instead of shadows. Elevation is spent almost entirely on one element,
+   the product panel, so it reads as the hero of the page.
+   ========================================================================== */
+
+@theme {
+  /* --- Ink -------------------------------------------------------------- */
+  /* Contrast ratios noted against --color-paper (#faf8f4). */
+  --color-ink: #16211d; /* 15.6:1 - headings */
+  --color-ink-soft: #3e4a45; /*  8.7:1 - emphasis copy */
+  --color-body: #55635c; /*  6.0:1 - body copy */
+  --color-muted: #5c6a64; /*  5.4:1 - captions, axis labels;
+                              still 4.5:1 on the deepest paper tint */
+
+  /* --- Brand: forest ---------------------------------------------------- */
+  --color-forest: #0e3b2d; /* primary action; 12.5:1 with white */
+  --color-forest-600: #14503c;
+  --color-forest-700: #0f4231;
+  --color-forest-800: #0a2c22;
+  --color-forest-950: #07201a; /* dark band ground */
+
+  /* --- Brand: copper (editorial accent, never an action) ---------------- */
+  --color-copper: #96551a; /* 5.5:1 on paper - safe for small text */
+  --color-copper-bright: #b4671f; /* marks, rules, chart strokes */
+  --color-copper-light: #e0a96a; /* 8.2:1 on the dark band */
+  --color-copper-wash: #f4e8da;
+
+  /* --- Paper and structure ---------------------------------------------- */
+  --color-paper: #faf8f4;
+  --color-paper-2: #f3f0ea;
+  --color-paper-3: #eae5db;
+  --color-card: #ffffff;
+  --color-rule: #e4dfd5; /* hairline */
+  --color-rule-strong: #d2cbbd;
+
+  /* --- Financial signs -------------------------------------------------- */
+  --color-pos: #16785a; /* 5.1:1 on paper */
+  --color-pos-wash: #e3f0ea;
+  --color-neg: #a8392a; /* 6.0:1 on paper */
+  --color-neg-wash: #f8e8e4;
+
+  /* --- Chart palette ----------------------------------------------------
+     Not hand-picked. These slots were run through the six categorical
+     checks (lightness band, chroma floor, protan/deutan separation,
+     normal-vision floor, contrast vs a white chart surface) and adjusted
+     until every check passed:
+
+       in / out pair     protan dE 13.1   normal dE 21.8
+       pos / neg pair    protan dE  8.2   normal dE 24.6
+
+     The composition ramp is a single-hue ordinal scale: monotone lightness,
+     adjacent dL >= 0.06, and a light end that still clears 2:1 on white.
+     ---------------------------------------------------------------------- */
+  --color-chart-in: #07734f; /* money in, revenue, positive net */
+  --color-chart-out: #cd8434; /* money out, expenses */
+  --color-chart-neg: #b43a29; /* negative net only */
+  --color-chart-grid: #ebe7df; /* hairline, one step off the card surface */
+  --color-chart-axis: #5c6a64;
+
+  --color-ramp-1: #0e3b2d;
+  --color-ramp-2: #155943;
+  --color-ramp-3: #1d7357;
+  --color-ramp-4: #2a8e6c;
+  --color-ramp-5: #45a583;
+  --color-ramp-6: #6dbb9d;
+
+  /* --- Type ------------------------------------------------------------- */
+  --font-serif: var(--font-source-serif), ui-serif, Georgia, Cambria,
+    "Times New Roman", serif;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular,
+    "Cascadia Mono", Menlo, Consolas, monospace;
+
+  /* --- Radii - deliberately tight --------------------------------------- */
+  --radius-xs: 3px;
+  --radius-btn: 6px;
+  --radius-card: 6px;
+  --radius-panel: 10px;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem; /* clears the sticky header on anchor jumps */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-body);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.68;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--color-ink);
+    font-family: var(--font-serif);
+    font-weight: 600;
+    line-height: 1.16;
+    letter-spacing: -0.014em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* A single focus treatment for the entire page. */
+  :focus-visible {
+    outline: 2px solid var(--color-forest-600);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  /* On the dark band a forest outline would disappear. */
+  .on-dark :focus-visible,
+  .on-dark:focus-visible {
+    outline-color: var(--color-copper-light);
+  }
+
+  ::selection {
+    background-color: var(--color-copper-wash);
+    color: var(--color-ink);
+  }
+
+  /* Figures must never jitter between states - this is a finance product. */
+  table,
+  th,
+  td {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ==========================================================================
+   Layout primitives
+   ========================================================================== */
+
+@utility shell {
+  width: 100%;
+  max-width: 81rem; /* 1296px, so ~1200px of content at 1440 */
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+
+  @media (width >= 40rem) {
+    padding-inline: 2rem;
+  }
+
+  @media (width >= 64rem) {
+    padding-inline: 3rem;
+  }
+}
+
+/* Vertical rhythm: 72px mobile to 120px desktop. */
+@utility section-y {
+  padding-block: clamp(4.5rem, 2.9rem + 6.4vw, 7.5rem);
+}
+
+@utility section-y-sm {
+  padding-block: clamp(3rem, 2.2rem + 3.2vw, 4.5rem);
+}
+
+/* ==========================================================================
+   Type scale
+   ========================================================================== */
+
+@utility t-display {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 1.55rem + 3.8vw, 4rem);
+  line-height: 1.04;
+  letter-spacing: -0.024em;
+  font-weight: 600;
+}
+
+@utility t-section {
+  font-family: var(--font-serif);
+  font-size: clamp(1.875rem, 1.35rem + 2.1vw, 2.75rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+@utility t-sub {
+  font-family: var(--font-serif);
+  font-size: clamp(1.375rem, 1.15rem + 0.9vw, 1.75rem);
+  line-height: 1.22;
+  letter-spacing: -0.016em;
+  font-weight: 600;
+}
+
+@utility t-card {
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.38;
+  letter-spacing: -0.008em;
+  font-weight: 600;
+}
+
+@utility t-lead {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+
+  @media (width >= 40rem) {
+    font-size: 1.1875rem;
+    line-height: 1.68;
+  }
+}
+
+/* Mono micro-label, the signature of the system. Used for eyebrows, table
+   headers, chart axes and metric captions, so the page keeps one voice for
+   anything that annotates rather than speaks. */
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+/* Any monetary or statistical figure. */
+@utility figure-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* ==========================================================================
+   Signature surfaces
+   ========================================================================== */
+
+/* Accounting-paper rules. The one decorative texture in the system, always
+   faded out before it reaches text. */
+@utility ledger-rules {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--color-rule) 0px,
+    var(--color-rule) 1px,
+    transparent 1px,
+    transparent 28px
+  );
+}
+
+@utility ledger-rules-dark {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.055) 0px,
+    rgba(255, 255, 255, 0.055) 1px,
+    transparent 1px,
+    transparent 28px
+  );
+}
+
+/* The product panel, the only element allowed real elevation. */
+@utility panel-raised {
+  box-shadow:
+    0 1px 2px rgba(22, 33, 29, 0.05),
+    0 12px 28px -10px rgba(22, 33, 29, 0.14),
+    0 40px 64px -32px rgba(22, 33, 29, 0.18);
+}
+
+/* ==========================================================================
+   Motion - subtle, and always gated on prefers-reduced-motion
+   ========================================================================== */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+[data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* Slow, near-static drift on the live indicator. */
+@keyframes fn-breathe {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.fn-breathe {
+  animation: fn-breathe 3.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  [data-reveal],
+  [data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
